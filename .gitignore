@@ -1,0 +1,16 @@
+# Ignore bundler config.
+/.bundle
+
+
+# Ignore all logfiles and tempfiles.
+/log/*.log
+/tmp
+
+/config/database.yml
+/config/secrets.yml
+
+/node_modules
+/public/bundle.*
+/vendor/bundle
+
+

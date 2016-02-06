@@ -1,0 +1,28 @@
+{
+  "name": "phonebook",
+  "version": "1.0.0",
+  "description": "== README",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "devserve": "webpack-dev-server -d --config webpack.config.js --content-base public/ --progress --colors --host 0.0.0.0 --port 8080",
+    "devbuild": "webpack -d --config webpack.config.js --profile --progress --colors"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-core": "^6.4.5",
+    "babel-loader": "^6.2.1",
+    "babel-preset-react": "^6.3.13",
+    "webpack": "^1.12.12",
+    "webpack-dev-server": "^1.14.1"
+  },
+  "dependencies": {
+    "babel": "^6.3.26",
+    "react": "^0.14.6",
+    "react-dom": "^0.14.6",
+    "reqwest": "^2.0.5"
+  }
+}

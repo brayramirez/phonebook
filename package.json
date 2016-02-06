@@ -21,8 +21,11 @@
   },
   "dependencies": {
     "babel": "^6.3.26",
+    "history": "^1.17.0",
     "react": "^0.14.6",
+    "react-addons-css-transition-group": "^0.14.7",
     "react-dom": "^0.14.6",
+    "react-router": "^1.0.3",
     "reqwest": "^2.0.5"
   }
 }

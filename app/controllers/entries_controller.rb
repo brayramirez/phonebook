@@ -1,7 +1,7 @@
 class EntriesController < BaseController
 
   def index
-    render :json => Entry.all
+    render :json => Entry.latest
   end
 
   def show

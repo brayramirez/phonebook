@@ -1,8 +1,10 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
+var Router = require('react-router').Router;
+
+var history = require('./config/history.jsx');
+var routes = require('./config/routes.jsx');
 
 
-var EntriesComponent = require('./components/entries/index.jsx');
-
-
-ReactDOM.render(<EntriesComponent />, document.getElementById('react-container'));
+ReactDOM.render(<Router history={history}>{routes}</Router>,
+  document.getElementById('react-container'));

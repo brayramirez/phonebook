@@ -1,7 +1,8 @@
 var React = require('react');
 
 
-var EntryComponent = require('./_entry.jsx');
+var NewForm = require('./_form.jsx');
+var List = require('./_list.jsx');
 
 var Reqwest = require('reqwest');
 
@@ -28,34 +29,17 @@ module.exports = React.createClass({
     });
   },
 
-  _rows: function(){
-    var rows = this.state.entries.map(function(entry){
-      return <EntryComponent key={entry.id} entry={entry} />;
-    });
+  _handleNewEntry: function(entry) {
+    var entries = this.state.entries;
 
-    return rows;
-  },
+    entries.unshift(entry);
 
-  _onClick: function(){
-    this.setState({
-      isVisibleComponent: !this.state.isVisibleComponent
-    });
-  },
-
-  _visibleComponent: function(){
-    if (!this.state.isVisibleComponent) return null;
-
-    return (
-      <div>
-        Hello World!
-      </div>
-    );
+    this.setState({ entries: entries });
   },
 
   getInitialState: function(){
     return {
-      entries: [],
-      isVisibleComponent: false
+      entries: []
     }
   },
 
@@ -66,19 +50,8 @@ module.exports = React.createClass({
   render: function(){
     return (
       <div>
-        {this._visibleComponent()}
-        <a href='#' onClick={this._onClick}>Show Component</a>
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-            </tr>
-          </thead>
-          <tbody>
-            {this._rows()}
-          </tbody>
-        </table>
+        <NewForm onNewEntry={this._handleNewEntry} />
+        <List entries={this.state.entries} />
       </div>
     );
   }

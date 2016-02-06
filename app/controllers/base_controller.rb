@@ -7,9 +7,9 @@ class BaseController < ApplicationController
     render :text => '', :content_type => 'text/plain'
   end
 
-  # def index
-  #   render :file => 'public/index.html'
-  # end
+  def index
+    render :file => 'public/index.html'
+  end
 
 
 

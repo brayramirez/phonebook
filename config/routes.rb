@@ -6,6 +6,6 @@ Rails.application.routes.draw do
     resources :entries, :only => [:index, :show, :create, :update, :destroy]
   end
 
-  # get '*path', :to => 'base#index', :constraints => {:format => 'html'}
+  get '*path', :to => 'base#index', :constraints => {:format => 'html'}
 
 end

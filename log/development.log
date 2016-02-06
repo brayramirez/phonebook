@@ -38353,3 +38353,37 @@ Started GET "/api/entries" for 127.0.0.1 at 2016-01-28 16:37:15 +0800
 Processing by EntriesController#index as JSON
   [1m[35mEntry Load (0.5ms)[0m  SELECT "entries".* FROM "entries"
 Completed 200 OK in 6ms (Views: 4.6ms | ActiveRecord: 0.5ms)
+
+
+Started OPTIONS "/api/entries" for 127.0.0.1 at 2016-02-06 21:22:20 +0800
+  [1m[36mActiveRecord::SchemaMigration Load (1.3ms)[0m  [1mSELECT "schema_migrations".* FROM "schema_migrations"[0m
+Processing by BaseController#preflight as */*
+  Parameters: {"all"=>"api/entries"}
+  Rendered text template (0.0ms)
+Completed 200 OK in 13ms (Views: 12.3ms | ActiveRecord: 0.0ms)
+
+
+Started GET "/api/entries" for 127.0.0.1 at 2016-02-06 21:22:20 +0800
+Processing by EntriesController#index as JSON
+  [1m[35mEntry Load (3.4ms)[0m  SELECT "entries".* FROM "entries"  ORDER BY created_at DESC
+Completed 200 OK in 23ms (Views: 11.2ms | ActiveRecord: 9.8ms)
+
+
+Started OPTIONS "/api/entries/33" for 127.0.0.1 at 2016-02-06 21:22:26 +0800
+Processing by BaseController#preflight as */*
+  Parameters: {"all"=>"api/entries/33"}
+  Rendered text template (0.0ms)
+Completed 200 OK in 1ms (Views: 0.5ms | ActiveRecord: 0.0ms)
+
+
+Started GET "/api/entries/33" for 127.0.0.1 at 2016-02-06 21:22:26 +0800
+Processing by EntriesController#show as JSON
+  Parameters: {"id"=>"33"}
+  [1m[36mEntry Load (1.6ms)[0m  [1mSELECT  "entries".* FROM "entries" WHERE "entries"."id" = $1 LIMIT 1[0m  [["id", 33]]
+Completed 200 OK in 17ms (Views: 0.5ms | ActiveRecord: 1.9ms)
+
+
+Started GET "/api/entries" for 127.0.0.1 at 2016-02-06 21:22:28 +0800
+Processing by EntriesController#index as JSON
+  [1m[35mEntry Load (0.8ms)[0m  SELECT "entries".* FROM "entries"  ORDER BY created_at DESC
+Completed 200 OK in 7ms (Views: 5.6ms | ActiveRecord: 0.8ms)

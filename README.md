@@ -72,7 +72,7 @@
 1. Install `Node`
 2. Install `npm`
 
-## Guide
+## Part 1: ReactJS Setup
 1. In your `Rails API` application root directory run `npm init`. Supply needed information
   * Running `npm init` will generate `package.json` in your app's root directory
   * `package.json` is similar to `Gemfile` in Rails. It will contain packages to build our frontend such as react
@@ -285,8 +285,120 @@
     end
   end
   ```
-
+  
 1. Changes can be seen in `localhost:8080`
+
+## Part 2: React CSS Transition and React Router
+
+1. Install React CSS Transition Group: `npm install react-addons-css-transition-group --save`
+
+1. Modify component to add CSS transition effects:
+  ```js
+  var ReactCSSTransitionGroup = require('react-addons-css-transition-group');
+  
+  <ReactCSSTransitionGroup transitionName=[Transition Name] transitionEnterTimeout=[Time] transitionLeaveTimeout=[Time]>
+    [Child Component]
+  </ReactCSSTransitionGroup>
+  ```
+
+1. Create CSS containing the transition effect
+  ```css
+  .[Transition Name]-enter {
+    opacity: 0;
+  }
+
+  .[Transition Name]-enter.[Transition Name]-enter-active {
+    opacity: 1;
+    transition: opacity 0.5s ease-in;
+  }
+  
+  .[Transition Name]-leave {
+    opacity: 1;
+  }
+  
+  .[Transition Name]-leave.[Transition Name]-leave-active {
+    opacity: 0;
+    transitionL opacity 0.5s ease-in;
+  }
+  ```
+
+1. Add Routing by install the following:
+  1. `npm install history --save`
+  1. `npm install react-router --save`
+
+1. Define history:
+  ```js
+  var createBrowserHistory = require('history/lib/createBrowserHistory');
+  var history = createBrowserHistory();
+  
+  module.exports = history;
+  ```
+1. Define routes:
+  ```js
+  var React = require('react');
+  var Route = require('react-router').Route;
+  var IndexRoute = require('react-router').IndexRoute;
+
+  var App = require('app.jsx');
+  var Index = require('index.jsx');
+  var UserShow = require('user-show.jsx');
+  var About = require('about.jsx');
+
+  module.exports = (
+    <Route path='/' component={App} >
+      <IndexRoute component={Index} />
+      <Route path='users/:id' component={UserShow} />
+      <Route path='about' component={About} />
+    </Route>
+  );
+  ```
+
+1. Modify entry point to use defined routes:
+  ```js
+  var React = require('react');
+  var ReactDOM = require('react-dom');
+  var Router = require('react-router').Router;
+
+  var history = require('./config/history.jsx');
+  var routes = require('./config/routes.jsx');
+
+  ReactDOM.render(<Router history={history}>{routes}</Router>,
+    document.getElementById([Mounting Element]));
+  ```
+
+1. Displaying routes in component defined in `<Route path='/' component={App} >`
+  ```js
+  var React = require('react');
+  
+  module.exports = React.createClass({
+    render: function() {
+      return this.props.children;
+    }
+  });
+  ```
+  
+1. Using links:
+  ```js
+  var Link = require('react-router').Link;
+  
+  <Link to=[Path]>[Display]</Link>
+  ```
+  
+1. Update Rails route to catch all routes:
+  ```ruby
+  Rails.application.routes.draw do
+    get '*path', :to => 'base#index', :constraints => {:format => 'html'}
+  end
+  ```
+
+1. Update Rails Base Controller:
+  ```ruby
+  class BaseController < ApplicationController
+    def index
+      render :file => 'public/index.html'
+    end
+  end
+  ```
 
 ### References
 1. http://www.openmindedinnovations.com/blogs/3-ways-to-integrate-ruby-on-rails-react-flux

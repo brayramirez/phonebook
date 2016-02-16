@@ -402,6 +402,257 @@
 
 ## Part 3: Flux Architecture
 
+1. Install Flux: `npm install flux --save`
+
+1. Create the following directories under `client`:
+  * `Actions` - will contain Action Creators
+  * `Constants` - will contain application constants
+  * `Dispatcher`
+  * `Stores`
+  * `Utils` - will contain other utility libraries such as API utilities
+
+1. Create `Payload Sources` Constants under `Constants` directory:
+  ```js
+  var keymirror = require('keymirror');
+   
+  module.exports = {
+  
+    CHANGE_EVENT: 'change',
+    PAYLOAD_SOURCES: keymirror({
+      SERVER_ACTION: null,
+      VIEW_ACTION: null
+    })
+  }
+ ```
+
+1. Create App Dispatcher js file under `Dispatcher` directory:
+  ```js
+  var Dispatcher = require('flux').Dispatcher;
+  var assign = require('object-assign');
+
+  var PhonebookConstants = require('../constants/phonebook-constants.js');
+  var PayloadSources = PhonebookConstants.PAYLOAD_SOURCES;
+
+  var PhonebookDispatcher = assign(new Dispatcher(), {
+    handleServerAction: function(action) {
+      var payload = {
+        source: PayloadSources.SERVER_ACTION,
+        action: action
+      };
+      this.dispatch(payload);
+    },
+    handleViewAction: function(action) {
+      var payload = {
+        source: PayloadSources.VIEW_ACTION,
+        action: action
+      };
+      this.dispatch(payload);
+    }
+  });
+
+  module.exports = PhonebookDispatcher;
+  ```
+1. Create Store-related constants that contains the `ActionTypes` under `Constants` directory:
+  ```js
+  var keymirror = require('keymirror');
+  
+  module.exports = {
+    ActionTypes: keymirror({
+      FETCH_RECORDS: null,
+      RECEIVE_RECORDS: null,
+      
+      CREATE_RECORD: null,
+      RECEIVE_CREATED_RECORD: null
+    })
+  }
+  ```
+
+1. Create store files under `Stores` directory with the following template for each file:
+  ```js
+  var EventEmitter = require('events').EventEmitter;
+  var assign = require('object-assign');
+
+  var [App]Constants = require('../constants/[app]-constants.js'); // This file contains the CHANGE_EVENT constant. This is created in Step 3
+
+  var [Store-related]Constants = require('../constants/[Store-related]-constants.js'); // This file contains the action types for this store. This is created in Step 5
+  var ActionTypes = [Store-related]Constants.ActionTypes;
+
+var [App]Dispatcher = require('../dispatcher/[app]-dispatcher.js'); // The dispatcher file created in Step 4
+
+// Define local variables here:
+var _records = [];
+
+var RecordStore = assign({}, EventEmitter.prototype, {
+  emitChange: function() {
+    this.emit([App]Constants.CHANGE_EVENT);
+  },
+
+  addChangeListener: function(callback) {
+    this.on([App]Constants.CHANGE_EVENT, callback);
+  },
+
+  removeChangeListener: function(callback) {
+    this.removeListener([App]Constants.CHANGE_EVENT, callback);
+  },
+
+  getRecords: function() {
+    return _records;
+  }
+});
+
+RecordStore.dispatchToken = [App]Dispatcher.register(function(payload) {
+  var action = payload.action;
+
+  switch(action.type){
+    case ActionTypes.RECEIVE_RECORDS:
+      _records = action.response.records;
+
+      RecordStore.emitChange();
+      break;
+
+    case ActionTypes.RECEIVE_CREATED_RECORD:
+      _records.unshift(action.response.record);
+
+      RecordStore.emitChange();
+      break;
+
+    default:
+      // Do nothing
+    }
+  });
+
+  module.exports = RecordStore;
+  ```
+
+1. Create View Actions under `Actions` Directory:
+  ```js
+  var [Store-related]Constants = require('../constants/[Store-related]-constants.js'); // This file contains the action types for this store. This is created in Step 5
+  var ActionTypes = [Store-related]Constants.ActionTypes;
+
+  var [App]Dispatcher = require('../dispatcher/[App]-dispatcher.js');
+
+  var APIUtils = require('../utils/api-utils.js');
+
+  module.exports = {
+    fetchRecords: function() {
+      [App]Dispatcher.handleViewAction({
+        type: ActionTypes.FETCH_RECORDS
+      });
+      APIUtils.fetchRecords();
+    },
+
+    createRecord: function(params) {
+      [App]Dispatcher.handleViewAction({
+        type: ActionTypes.CREATE_RECORD
+      });
+      APIUtils.createRecord(params);
+    }
+  }
+  ```
+  
+1. Create Server Actions under `Actions` Directory:
+  ```js
+  var [Store-related]Constants = require('../constants/[Store-related]-constants.js'); // This file contains the action types for this store. This is created in Step 5
+  var ActionTypes = [Store-related]Constants.ActionTypes;
+
+  var [App]Dispatcher = require('../dispatcher/[App-dispatcher.js');
+
+  module.exports = {
+    receiveRecords: function(response) {
+      [App]Dispatcher.handleServerAction({
+        type: ActionTypes.RECEIVE_RECORDS,
+        response: response
+      });
+    },
+
+    receiveCreatedRecord: function(response) {
+      [App]Dispatcher.handleServerAction({
+        type: ActionTypes.RECEIVE_CREATED_RECORD,
+        response: response
+      });
+    }
+  }
+  ```
+
+1. Create API Utils to connect to Server (Transfer API calls from components). But under success callback, invoke a ServerActionCreator:
+  ```js
+  require [Record]ServerActionCreator = require('actions/[Record]ServerActionCreator.js');
+  ...
+  fetchRecords: function() {
+    Reqwest({
+      url: 'http://localhost:3000/tasks',
+      type: 'json',
+      method: 'get',
+      contentType: 'application/json',
+      success: function(response){
+        [Record]ServerActionCreator.receiveRecords(response.tasks);
+      },
+      error: function(error){
+        console.error(error.message);
+      }
+    });
+  },
+  ```
+
+1. Update views to use Actions and Stores to pull data from API
+  ```js
+  var React = require('react');
+  
+  var [Record]ViewActionCreator = require('actions/[Record]ViewActionCreator.js');
+  var [Record]Store = require('stores/[Record]Store.js');
+
+  module.exports = React.createClass({
+    _tasks: function(){
+      var rows = this.state.tasks.map(function(task){
+        return (
+          <tr key={task.id}>
+            <td>{task.id}</td>
+            <td>{task.name}</td>
+            <td>{task.done}</td>
+          </tr>
+        );
+      });
+
+      return rows;
+    },
+    
+    _onChange: function(){
+      this.setState({ tasks: [Record]Store.getRecords() });
+    },
+
+    componentDidMount: function(){
+      [Record]Store.addChangeListener( this._onChange );
+      [Record]ViewActionCreator.fetchRecords();
+    },
+    
+    componentWillUnmount: function(){
+      [Record]Store.removeChangeListener( this._onChange );
+    },
+
+    getInitialState: function(){
+      return {
+        tasks: []
+      }
+    },
+
+    render: function(){
+      return (
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Done</th>
+            </tr>
+          </thead>
+          <tbody>
+            {this._tasks()}
+          </tbody>
+        </table>
+      );
+    }
+  });
+  ```
 
 ### References
 1. http://www.openmindedinnovations.com/blogs/3-ways-to-integrate-ruby-on-rails-react-flux

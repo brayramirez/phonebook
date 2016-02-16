@@ -400,6 +400,9 @@
   end
   ```
 
+## Part 3: Flux Architecture
+
+
 ### References
 1. http://www.openmindedinnovations.com/blogs/3-ways-to-integrate-ruby-on-rails-react-flux
 2. http://fancypixel.github.io/blog/2015/01/28/react-plus-flux-backed-by-rails-api/

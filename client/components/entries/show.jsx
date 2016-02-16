@@ -1,27 +1,14 @@
 var React = require('react');
 var Link = require('react-router').Link;
 
-var Reqwest = require('reqwest');
+var EntryStore = require('../../stores/entry-store.js');
+var EntryViewActionCreator = require('../../actions/entry-view-action-creator.js');
 
 
 module.exports = React.createClass({
 
-  _fetchEntry: function(entryID) {
-    var _this = this,
-        url = 'http://localhost:3000/api/entries/' + entryID;
-
-    Reqwest({
-      url: url,
-      type: 'json',
-      method: 'get',
-      contentType: 'application/json',
-      success: function(response) {
-        _this.setState({ entry: response.entry });
-      },
-      error: function(error) {
-        console.error(error.response);
-      }
-    });
+  _onChange: function() {
+    this.setState({ entry: EntryStore.getEntry() });
   },
 
   getInitialState: function() {
@@ -31,7 +18,12 @@ module.exports = React.createClass({
   },
 
   componentDidMount: function() {
-    this._fetchEntry(this.props.params.id);
+    EntryStore.addChangeListener( this._onChange );
+    EntryViewActionCreator.fetchEntry(this.props.params.id);
+  },
+
+  componentWillUnmount: function() {
+    EntryStore.removeChangeListener( this._onChange );
   },
 
   render: function() {

@@ -1,6 +1,6 @@
 var React = require('react');
 
-var Reqwest = require('reqwest');
+var EntryViewActionCreator = require('../../actions/entry-view-action-creator.js');
 
 
 module.exports = React.createClass({
@@ -24,20 +24,7 @@ module.exports = React.createClass({
       description: this.refs.descriptionField.value
     };
 
-    Reqwest({
-      url: 'http://localhost:3000/api/entries',
-      type: 'json',
-      method: 'post',
-      contentType: 'application/json',
-      data: JSON.stringify({ entry: params }),
-      success: function(response) {
-        _this.props.onNewEntry(response.entry);
-        _this._clearFields();
-      },
-      error: function(error) {
-        console.error(error.response);
-      }
-    });
+    EntryViewActionCreator.createEntry(params);
   },
 
   _handleCancel: function(e) {

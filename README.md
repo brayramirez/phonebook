@@ -430,10 +430,10 @@
   var Dispatcher = require('flux').Dispatcher;
   var assign = require('object-assign');
 
-  var PhonebookConstants = require('../constants/phonebook-constants.js');
-  var PayloadSources = PhonebookConstants.PAYLOAD_SOURCES;
+  var [App]Constants = require('../constants/[app]-constants.js'); // This is created in Step 3
+  var PayloadSources = [App]Constants.PAYLOAD_SOURCES;
 
-  var PhonebookDispatcher = assign(new Dispatcher(), {
+  var [App]Dispatcher = assign(new Dispatcher(), {
     handleServerAction: function(action) {
       var payload = {
         source: PayloadSources.SERVER_ACTION,
@@ -450,7 +450,7 @@
     }
   });
 
-  module.exports = PhonebookDispatcher;
+  module.exports = [App]Dispatcher;
   ```
 1. Create Store-related constants that contains the `ActionTypes` under `Constants` directory:
   ```js
